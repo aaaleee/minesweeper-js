@@ -231,6 +231,7 @@ function logout() {
     gameContainer.innerHTML = "";
     gamesList.innerHTML = "";
     status.innerHTML = "";
+    messages.innerHTML = "";
 
 }
 
