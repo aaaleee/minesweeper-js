@@ -6,18 +6,21 @@
     <body>
         <div id="main">
             <h3>Minesweeper</h3>
+            <span>Left click to uncover blocks, right click on uncovered blocks to toggle between flagged, ? and normal states.</span><br>
             <div id="messages"></div>
             <div id="auth">
-                <div id="auth-buttons">
+                <div id="auth-buttons" style="margin: 5px;">
                     <button id="login-form-button" style="display: none;">Login</button>
                     <button id="register-form-button">Register</button>
                 </div>
-                <div id="login-form">
+                <div id="login-form" style="margin: 5px;">
+                    <h3>Login</h3>
                     <label>Email:</label><input type="text" value="" id="login-email" />
                     <label>Password:</label><input type="password" value="" id="login-password" />
                     <button id="submit-login">Login</button>
                 </div>
-                <div id="register-form" style="display: none;">
+                <div id="register-form" style="display: none;" style="margin: 5px;">
+                    <h3>Register</h3>
                     <label>Email:</label><input type="text" value="" id="register-email" />
                     <label>Password:</label><input type="password" value="" id="register-password" />
                     <label>Repeat Password:</label><input type="password" value="" id="register-password2" />

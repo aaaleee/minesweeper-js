@@ -65,10 +65,10 @@ export default class Minesweeper {
         if (response.status === 200) {
             console.log('Got a token ' + data.token);
             this.token = data.token;
-            return true;
         } else {
-            return this.processError(response.status, data);
+            this.processError(response.status, data);
         }
+        return {"status": response.status, "data": data};
     }
 
     async register() {
@@ -82,10 +82,10 @@ export default class Minesweeper {
         
         if (response.status === 200) {
             await this.connect();
-            return true;
         } else {
-            return this.processError(response.status, data);
+            this.processError(response.status, data);
         }
+        return {"status": response.status, "data": data};
     }
 
     async listGames() {
@@ -94,24 +94,25 @@ export default class Minesweeper {
         }
         const request = this.prepareRequest('/games', 'GET');
         const response = await fetch(request);
-        const data = await response.json();
+        let data = await response.json();
 
         if(response.status === 200) {
             console.log('Games retrieved');
             console.log(data.games);
-            return data.games;
+            data = data.games
         } else {
-            return this.processError(response.status, data);
+            this.processError(response.status, data);
         }
+        return {"status": response.status, "data": data};
     }
 
     refreshGame(response, data) {
         if(response.status === 200) {
             this.game = data;
-            return data;
         } else {
-            return this.processError(response.status, data);
+            this.processError(response.status, data);
         }
+        return {"status": response.status, "data": data};
     }
 
     async loadGame(id) {

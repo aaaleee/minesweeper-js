@@ -66,17 +66,17 @@ function generateCell(row, column, value) {
     cell.style = (value=="C") ? coveredCellStyle : uncoveredCellStyle;
 
     cell.addEventListener('click', function(){
-        ms.clearCell(row, column).then(data => {
-            refreshBoard(data.board);
-            refreshStatus(data);
+        ms.clearCell(row, column).then(result => {
+            refreshBoard(result.data.board);
+            refreshStatus(result.data);
         });
     });
 
     cell.addEventListener('contextmenu', function(event){
         event.preventDefault();
-        ms.toggleCell(row, column).then(data => {
-            refreshBoard(data.board);
-            refreshStatus(data);
+        ms.toggleCell(row, column).then(result => {
+            refreshBoard(result.data.board);
+            refreshStatus(result.data);
         });
     });
     
@@ -107,24 +107,29 @@ function refreshBoard(data) {
 function refreshStatus(data) {
     let newStatus = "<b>Status</b><br>";
     newStatus += "Mines Left: " + data.mines_left + "<br>";
-    newStatus += "Outcome: " + data.status + "<br>";
-    newStatus += "Started on: " + data.start_time + "<br>";
+    newStatus += "State: " + data.status + "<br>";
+    if(data.start_time) {
+        newStatus += "Started on: " + data.start_time + "<br>";
+    }
     if(data.end_time) {
         newStatus += "Ended on: " + data.end_time + "<br>";
     }
-    
     status.innerHTML = newStatus;
 }
 
 
 function loadGame(gameId) {
-    ms.loadGame(gameId).then(data => {
-        if(data) {
+    ms.loadGame(gameId).then(result => {
+        if(result.status==200) {
             console.log("Game Loaded");
-            console.log(data);
-            currentGameId = data.id;
-            refreshBoard(data.board);
-            refreshStatus(data);
+            console.log(result.data);
+            currentGameId = result.data.id;
+            refreshBoard(result.data.board);
+            refreshStatus(result.data);
+            messages.innerHTML = "";
+            loadGames();
+        } else {
+            displayError(result.data);
         }
     });
 }
@@ -146,21 +151,34 @@ function generateGameButton(gameId) {
 
 
 function loadGames() {
+    var previousList = document.getElementById("all-games");
     var allGames = document.createElement('ul');
-    allGames.id = "all-games";
     ms.listGames().then(result => {
-        if(result) {
+        if(result.status==200) {
             allGames.appendChild(generateGameButton(-1));
-            result.forEach(gameData => {
-                console.log(gameData);
-                console.log(gameData["status"]);
+            console.log("Current ID is"+currentGameId);
+            result.data.forEach(gameData => {
                 if(gameData["status"]=="started" && currentGameId!=gameData["id"]) {
+                    console.log("game data id is "+gameData["id"]);
                     allGames.appendChild(generateGameButton(gameData["id"]));
                 }
             });
-            gamesList.appendChild(allGames);
+            if(previousList) {
+                previousList.replaceWith(allGames);
+            } else {
+                gamesList.appendChild(allGames);
+            }
+            allGames.id = "all-games";
         }
     });
+}
+
+function displayError(data) {
+    if(data) {
+        messages.innerHTML = JSON.stringify(data);
+    } else {
+        messages.innerHTML = "An error has occurred";
+    }
 }
 
 
@@ -170,13 +188,13 @@ function login() {
     console.log("Logging in as " + email);
     ms = new Minesweeper(serverUrl, email, password);
     ms.connect().then(result => {
-        if(result) {
+        if(result.status==200) {
             isLoggedIn = true;
             messages.innerHTML = "Logged in as "+ email;
             showLogout();
             loadGames();
         } else {
-            messages.innerHTML = "There was an error!";
+            displayError(result.data);
         }
     });
 }
@@ -188,17 +206,19 @@ function register() {
 
     ms = new Minesweeper(serverUrl, email, password);
     ms.register().then(result => {
-        if(result) {
+        if(result.status==200) {
             ms.connect().then(res => {
-                if(res) {
+                if(res.status==200) {
                     isLoggedIn = true;
                     messages.innerHTML = "Logged in as "+ email;
                     showLogout();
+                    loadGames();
+                } else {
+                    displayError(res.data);
                 }
             });
-            
         } else {
-            messages.innerHTML = "There was an error!";
+            messages.innerHTML = "There was an error while registering! make sure you don't already have an account!";
         }
     });
 }
@@ -216,12 +236,14 @@ function logout() {
 
 
 function startGame() {
-    ms.startNewGame(10, 10, 25).then(data => {
-        refreshBoard(data.board);
-        refreshStatus(data);
-        currentGameId = data.id;
+    ms.startNewGame(10, 10, 25).then(result => {
+        refreshBoard(result.data.board);
+        refreshStatus(result.data);
+        currentGameId = result.data.id;
         console.log("New Game Started");
         console.log(data);
+        loadGames();
+        messages.innerHTML = "";
     });
 
 }
