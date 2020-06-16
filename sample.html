@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <script type="module" src='minesweeper.js'></script>
+        
+    </head>
+    <body>
+        <div id="main">
+            <h3>Minesweeper</h3>
+            <div id="messages"></div>
+            <div id="auth">
+                <div id="auth-buttons">
+                    <button id="login-form-button" style="display: none;">Login</button>
+                    <button id="register-form-button">Register</button>
+                </div>
+                <div id="login-form">
+                    <label>Email:</label><input type="text" value="" id="login-email" />
+                    <label>Password:</label><input type="password" value="" id="login-password" />
+                    <button id="submit-login">Login</button>
+                </div>
+                <div id="register-form" style="display: none;">
+                    <label>Email:</label><input type="text" value="" id="register-email" />
+                    <label>Password:</label><input type="password" value="" id="register-password" />
+                    <label>Repeat Password:</label><input type="password" value="" id="register-password2" />
+                    <button id="submit-register" >Register</button>
+                </div>
+                <button id="logout" style="display: none;">Logout</button>
+            </div>
+            <div id="games"></div>
+            <div id="game"></div>
+            <div id="status"></div>
+        </div>
+        <script type="module" src="sample.js"></script>
+    </body>
+
+</html>
